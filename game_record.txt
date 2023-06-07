@@ -1,0 +1,27 @@
+Player Name: John Doe
+Date & Time: 2023-06-03 14:07:32.160810
+Game Result: Win
+Board State: BoardState
+---------------------------
+Player Name: John Doe
+Date & Time: 2023-06-03 14:07:43.669036
+Game Result: Win
+Board State: BoardState
+---------------------------
+Player Name: John Doe
+Date & Time: 2023-06-03 14:07:48.781170
+Game Result: Win
+Board State: BoardState
+---------------------------
+Player Name: O
+Date & Time: 2023-06-04 19:00:36.213510
+Game Result: Win
+Board State: [['X', ' ', ' '], ['O', 'O', 'O'], ['X', 'X', ' ']]
+Moves: [(1, 1), (1, 0), (1, 2)]
+---------------------------
+Player Name: X
+Date & Time: 2023-06-04 19:02:13.359012
+Game Result: Win
+Board State: [['O', 'X', ' '], [' ', 'X', ' '], [' ', 'X', 'O']]
+Moves: [(0, 1), (1, 1), (2, 1)]
+---------------------------
