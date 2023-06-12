@@ -1,7 +1,10 @@
 # GameMachineLearning
-About The Project: This section provides an overview of your project. It should briefly explain what the project is, how it works, and what technologies or techniques it uses. In this case, the project is a game of Tic-Tac-Toe in which an AI player learns to play using Deep-Q Learning.
+About The Project:This project uses Python's TensorFlow library for Deep-Q Learning. It consists of two players, an AI and a human. The AI learns from playing the game against the human, updating its knowledge about the game after each action. The human player can play against the AI and see how the AI improves over time.
 
 Requirements and Installation: Here, you list the software requirements for your project and provide instructions on how to install them. In this case, the project requires Python 3.x and several Python libraries. The installation instructions provide the commands to install these libraries using pip, a package installer for Python.
+Numpy
+Keras
+TensorFlow
 
 Usage: This section provides instructions on how to use your project. For a software project, this usually means how to run the program. In this case, the instructions are to clone the repository and run a Python file.
 
