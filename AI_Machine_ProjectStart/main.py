@@ -1,5 +1,5 @@
 from Game import Game
-from Agent import Agent
+from AgentQ import Agent
 
 
 
