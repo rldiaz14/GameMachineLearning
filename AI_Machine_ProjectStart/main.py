@@ -1,5 +1,5 @@
 from Game import Game
-from AgentQ import Agent
+from AgentQ import AgentQ
 
 
 
@@ -8,7 +8,7 @@ def main():
     game = Game()
 
     # Create an agent instance
-    agent = Agent(epsilon=0.2, alpha=0.5, gamma=0.9)
+    agent = AgentQ(epsilon=0.2, alpha=0.5, gamma=0.9)
 
     # Number of episodes for training
     episode = 1000

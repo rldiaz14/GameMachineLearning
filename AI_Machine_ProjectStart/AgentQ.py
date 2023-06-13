@@ -1,7 +1,7 @@
 import random
 from collections import defaultdict
-
 import numpy as np
+import pickle
 
 
 class Agent:
@@ -41,8 +41,8 @@ class Agent:
         """
         This method returns available actions for a given state.
         """
-        # To do
-        pass
+        return np.where(state.flatten() == 0)[0]
+
 
     def update_q_value(self, state, action, reward, next_state, done):
         """
@@ -60,19 +60,27 @@ class Agent:
         """
         This method trains the agent for a given number of episodes and maximum steps per episode.
         """
-        # to do
-        pass
+        for episodes in range(episodes):
+            state = game.reset()
+            done = False
+            step = 0
+            while not done and step < max_steps:
+                available_actions = self.available_actions(state)
+                next_state, reward, done, _ = game.step(action)
+                self.update_q_value(state, action, reward, next_state, done)
+                state = next_state
+                step += 1
 
     def save_model(self, filepath):
         """
         This method saves the current state-action value (Q value) estimates to a file.
         """
-        # To do
-        pass
+        with open(filepath, 'wb') as file:
+            pickle.dump(dict(self.Q), file)
 
     def load_model(self, filepath):
         """
         This method loads state-action value (Q value) estimates from a file.
         """
-        # To do
-        pass
+       with open(filepath, 'rb') as file:
+           self.Q = pickle.load(file)

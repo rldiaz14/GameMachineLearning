@@ -1,4 +1,5 @@
 import numpy as np
+
 class Game:
     def __init__(self):
         """
@@ -39,9 +40,37 @@ class Game:
         """
         This method checks if there's a winner (three 'X's or 'O's in a row in any direction)
         """
+        # Check horizontal lines
+        for row in self.board:
+            if np.all(row == 1):
+                self.current_winner = 1
+                return True
+            if np.all(row == -1):
+                self.current_winner = -1
+                return True
 
-        #  To do
-        pass
+        # Check vertical lines
+        for col in self.board.T:
+            if np.all(col == 1):
+                self.current_winner = 1
+                return True
+            if np.all(col == -1):
+                self.current_winner = -1
+                return True
+
+        # Check main diagonal
+        if np.all(np.diag(self.board) == 1) or np.all(np.diag(np.flipud(self.board)) == 1):
+            self.current_winner = 1
+            return True
+
+        if np.all(np.diag(self.board) == -1) or np.all(np.diag(np.flipud(self.board)) == -1):
+            self.current_winner = -1
+            return True
+
+        return False
+
+
+
 
     def is_board_full(self):
         """
