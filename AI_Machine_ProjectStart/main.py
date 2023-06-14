@@ -1,6 +1,6 @@
 from Game import Game
 from AgentQ import AgentQ
-
+from AgentR import RandomAgent
 
 
 def main():
@@ -9,6 +9,9 @@ def main():
 
     # Create an agent instance
     agent = AgentQ(epsilon=0.2, alpha=0.5, gamma=0.9)
+
+    # Create an agent instance
+    opponent = RandomAgent(action_size=9)
 
     # Number of episodes for training
     episode = 1000

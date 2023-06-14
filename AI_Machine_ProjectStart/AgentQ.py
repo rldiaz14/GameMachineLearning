@@ -4,8 +4,9 @@ import numpy as np
 import pickle
 
 
-class Agent:
-    def __int__(self, epsilon=0.2, alpha=0.5, gamma=0.9):
+
+class AgentQ:
+    def __init__(self, epsilon=0.2, alpha=0.5, gamma=0.9):
         """"
         This method initializes the agent. It's the constructor for the agent class.
         """
@@ -18,30 +19,39 @@ class Agent:
         """
         This method returns the action (from all possible actions) that has the maximum Q value for a given state.
         """
-        max_q_val = np.inf
+        max_q_val = -np.inf
         best_action = None
-        for action in self.available_action(state):
+        for action in self.available_actions(state):
             q_val = self.Q[(state, action)]
             if q_val > max_q_val:
                 max_q_val = q_val
                 best_action = action
         return max_q_val, best_action
-    def choose_action(self, state, available_actions):
+    def choose_action(self, state_tuple, available_actions):
         """
         This method chooses an action based on the epsilon-greedy policy (a mix of taking the best action
         and exploring new actions).
         """
-        if random.random() < self.epsilon:
-            return random.choice(available_actions)
+        # Exploration-exploitation trade-off
+        if np.random.uniform(0, 1) < self.epsilon:
+            # Exploration: choose a random action from all available actions
+            action = np.random.choice(available_actions)
         else:
-            _, best_action = self.get_max_q_value_action(state)
-            return best_action
+            # Exploitation: choose the action with max Q-value for the current state
+            _, best_action = self.get_max_q_value_action(state_tuple)
+            if best_action in available_actions:
+                action = best_action
+            else:
+                action = np.random.choice(available_actions)
+        return action
 
-    def available_actions(self, state):
+
+
+    def available_actions(self, state_tuple):
         """
         This method returns available actions for a given state.
         """
-        return np.where(state.flatten() == 0)[0]
+        return np.where(np.array(state_tuple) == 0)[0]
 
 
     def update_q_value(self, state, action, reward, next_state, done):
@@ -56,31 +66,42 @@ class Agent:
             max_q_next, _ = self.get_max_q_value_action(next_state)
         self.Q[(state, action)] = self.Q[(state, action)] + self.alpha * (reward + self.gamma * max_q_next - self.Q[(state, action)])
 
-    def train(self, episodes, max_steps):
+    def train(self, game, episodes, max_steps):
         """
         This method trains the agent for a given number of episodes and maximum steps per episode.
         """
-        for episodes in range(episodes):
+        for episode in range(episodes):
             state = game.reset()
-            done = False
-            step = 0
-            while not done and step < max_steps:
+            state_tuple = tuple(state.flatten())  # converting state to a tuple
+
+            for step in range(max_steps):
                 available_actions = self.available_actions(state)
-                next_state, reward, done, _ = game.step(action)
-                self.update_q_value(state, action, reward, next_state, done)
-                state = next_state
-                step += 1
+                action = self.choose_action(state_tuple, available_actions)
+
+                next_state, reward, done = game.step(action)
+                next_state_tuple = tuple(next_state.flatten())  # converting next_state to a tuple
+
+                # Q-learning formula
+                best_q_value_next, _ = self.get_max_q_value_action(next_state_tuple)
+                self.Q[(state_tuple, action)] = self.Q.get((state_tuple, action), 0) + \
+                                                self.alpha * (reward + self.gamma * best_q_value_next -
+                                                              self.Q.get((state_tuple, action), 0))
+
+                if done:
+                    break
+
+                state_tuple = next_state_tuple  # update state_tuple with next_state_tuple
 
     def save_model(self, filepath):
         """
         This method saves the current state-action value (Q value) estimates to a file.
         """
-        with open(filepath, 'wb') as file:
-            pickle.dump(dict(self.Q), file)
+        with open(filepath, 'wb') as f:
+            pickle.dump(self.Q, f)
 
     def load_model(self, filepath):
         """
         This method loads state-action value (Q value) estimates from a file.
         """
-       with open(filepath, 'rb') as file:
-           self.Q = pickle.load(file)
+        with open(filepath, 'rb') as f:
+            self.Q = pickle.load(f)

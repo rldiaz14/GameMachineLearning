@@ -14,6 +14,7 @@ class Game:
         """
         self.board = np.zeros((3, 3))
         self.current_winner = None
+        return self.board.copy()
 
     def step(self, action):
         """
@@ -70,8 +71,14 @@ class Game:
         return False
 
 
+    def check_game_over(self):
+        """
 
-
+        This method check if the game is over, which can be when there is a winner or the board is full.
+        """
+        if self.check_winner() or self.is_board_full():
+            return True
+        return False
     def is_board_full(self):
         """
         This method checks if the board is full (i.e., there are no more moves left).
