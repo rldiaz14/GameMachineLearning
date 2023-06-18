@@ -1,4 +1,4 @@
-[![Demo Video](http://img.youtube.com/vi/VIDEO_ID/0.jpg)]([http://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=Bp7YQxDjafg) "Demo Video")
+[![Machine Learning](http://img.youtube.com/vi/VIDEO_ID/0.jpg)]([http://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=Bp7YQxDjafg) "Machine Learning")
 
 
 
