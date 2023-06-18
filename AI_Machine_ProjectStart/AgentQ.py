@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 import numpy as np
 import pickle
@@ -6,7 +5,7 @@ import pickle
 
 
 class AgentQ:
-    def __init__(self, epsilon=0.2, alpha=0.5, gamma=0.9):
+    def __init__(self, grid_size, epsilon=0.2, alpha=0.5, gamma=0.9):
         """"
         This method initializes the agent. It's the constructor for the agent class.
         """
@@ -15,19 +14,23 @@ class AgentQ:
         self.epsilon = epsilon # epsilon for exploration-exploitation trade-off
         self.alpha = alpha # learning rate
         self.gamma = gamma # discount factor
-    def get_max_q_value_action(self, state):
+        self.grid_size = grid_size
+
+    def get_max_q_value_action(self, state, available_actions):
         """
         This method returns the action (from all possible actions) that has the maximum Q value for a given state.
         """
         max_q_val = -np.inf
         best_action = None
-        for action in self.available_actions(state):
-            q_val = self.Q[(state, action)]
+        for action in available_actions:
+            q_val = self.Q[(state.tobytes(), action)]
             if q_val > max_q_val:
                 max_q_val = q_val
                 best_action = action
         return max_q_val, best_action
-    def choose_action(self, state_tuple, available_actions):
+
+
+    def choose_action(self, state, available_actions):
         """
         This method chooses an action based on the epsilon-greedy policy (a mix of taking the best action
         and exploring new actions).
@@ -35,26 +38,22 @@ class AgentQ:
         # Exploration-exploitation trade-off
         if np.random.uniform(0, 1) < self.epsilon:
             # Exploration: choose a random action from all available actions
-            action = np.random.choice(available_actions)
+            action = available_actions[np.random.choice(len(available_actions))]
         else:
-            # Exploitation: choose the action with max Q-value for the current state
-            _, best_action = self.get_max_q_value_action(state_tuple)
-            if best_action in available_actions:
-                action = best_action
-            else:
-                action = np.random.choice(available_actions)
+            # Exploitation : choose the action from all available actions
+            _, action = self.get_max_q_value_action(state, available_actions)
+            if action not in available_actions:
+                action = available_actions[np.random.choice(len(available_actions))]
         return action
 
 
-
-    def available_actions(self, state_tuple):
+    def available_actions(self):
         """
         This method returns available actions for a given state.
         """
-        return np.where(np.array(state_tuple) == 0)[0]
+        return [(i, j) for i in range(self.grid_size) for j in range(self.grid_size) if self.state[i][j] == 0]
 
-
-    def update_q_value(self, state, action, reward, next_state, done):
+    def update_q_value(self, state, action, reward, next_state, done, available_actions):
         """
         This method updates the Q value of a (state, action) pair based on the reward received
         and the maximum Q value of the next state.
@@ -63,35 +62,25 @@ class AgentQ:
         if done:
             max_q_next = 0
         else:
-            max_q_next, _ = self.get_max_q_value_action(next_state)
-        self.Q[(state, action)] = self.Q[(state, action)] + self.alpha * (reward + self.gamma * max_q_next - self.Q[(state, action)])
+            max_q_next, _ = self.get_max_q_value_action(next_state, available_actions)
+        self.Q[(state.tobytes(), action)] = self.Q[(state.tobytes(), action)] + \
+                                            self.alpha * (reward + self.gamma * max_q_next - \
+                                            self.Q[(state.tobytes(), action)])
 
     def train(self, game, episodes, max_steps):
         """
         This method trains the agent for a given number of episodes and maximum steps per episode.
         """
-        for episode in range(episodes):
+        for episodes in range(episodes):
             state = game.reset()
-            state_tuple = tuple(state.flatten())  # converting state to a tuple
-
             for step in range(max_steps):
-                available_actions = self.available_actions(state)
-                action = self.choose_action(state_tuple, available_actions)
-
+                available_actions = game.available_actions()
+                action = self.choose_action(state, available_actions)
                 next_state, reward, done = game.step(action)
-                next_state_tuple = tuple(next_state.flatten())  # converting next_state to a tuple
-
-                # Q-learning formula
-                best_q_value_next, _ = self.get_max_q_value_action(next_state_tuple)
-                self.Q[(state_tuple, action)] = self.Q.get((state_tuple, action), 0) + \
-                                                self.alpha * (reward + self.gamma * best_q_value_next -
-                                                              self.Q.get((state_tuple, action), 0))
-
+                self.update_q_value(state, action, reward, next_state, done, available_actions)
                 if done:
                     break
-
-                state_tuple = next_state_tuple  # update state_tuple with next_state_tuple
-
+                state = next_state # update state with next_state
     def save_model(self, filepath):
         """
         This method saves the current state-action value (Q value) estimates to a file.

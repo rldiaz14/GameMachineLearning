@@ -1,4 +1,6 @@
+import random
 import numpy as np
+
 
 class Game:
     def __init__(self):
@@ -16,16 +18,32 @@ class Game:
         self.current_winner = None
         return self.board.copy()
 
-    def step(self, action):
+    def available_actions(self):
         """
-        This method applies an action (placing 'X' or 'O' on the board). It returns the next state, reward and whether the game has ended.
+        Return a list of available actions.
         """
-        # Action will be a tuple (i, j), i.e, where to place 'X' or 'O'
-        self.board[action] = 1 # Assuming '1' for the agent and ' -1' for the opponent
-        reward = self.get_reward()
-        done = self.check_game_over()
-        return self.board.copy(), reward, done
+        return [(i, j) for i in range(self.board.shape[0]) for j in range(self.board.shape[1]) if self.board[i, j] == 0]
 
+    def step(self, action1, action2):
+        """
+        This method applies an action (placing 'X' or 'O' on the board). It returns the next state, reward and whether
+        the game has ended.
+        """
+        # Agent Q's move
+        self.board[action1] = 1 # Agent's move
+        reward1 = self.get_reward()
+        done = self.check_game_over()
+
+        # Environment's move
+        if done:
+            return self.board.copy(), reward1, -reward1, done
+
+        # Agent M's move
+        self.board[action2] = -1 # AgentM's move
+        reward2 = self.get_reward()
+        done = self.check_game_over()
+
+        return self.board.copy(), -reward2, reward2, done
     def get_reward(self):
         """
         Checks if the game has a winner and returns appropriate reward.
@@ -73,12 +91,12 @@ class Game:
 
     def check_game_over(self):
         """
-
         This method check if the game is over, which can be when there is a winner or the board is full.
         """
         if self.check_winner() or self.is_board_full():
             return True
         return False
+
     def is_board_full(self):
         """
         This method checks if the board is full (i.e., there are no more moves left).
@@ -89,7 +107,9 @@ class Game:
         """
         This method prints the current board state in a way that's easy for humans to understand.
         """
-        print(self.board)
+        symbol = {1: 'X', -1: 'O', 0: ' '}
+        board_visual = np.vectorize(symbol.get)(self.board)
+        print(board_visual)
 
 
 
