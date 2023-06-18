@@ -1,4 +1,5 @@
-[![Machine Learning Video](http://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=Bp7YQxDjafg)])](https://www.youtube.com/watch?v=Bp7YQxDjafg "Machine Learning Video")
+[![Demo Video](http://img.youtube.com/vi/VIDEO_ID/0.jpg)]([http://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=Bp7YQxDjafg) "Demo Video")
+
 
 
 # GameMachineLearning
